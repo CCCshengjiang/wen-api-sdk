@@ -11,8 +11,8 @@ import com.wen.wenapiclient.util.SignUtil;
 import com.wen.wenapicommon.common.BaseCode;
 import com.wen.wenapicommon.exception.BusinessException;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -24,7 +24,8 @@ import java.util.Map;
 @Slf4j
 public class MethodInvokeImpl implements MethodInvoke {
 
-    private static final String GATEWAY_HOST = "https://api-gateway.cwblue.cn";
+    /*private static final String GATEWAY_HOST = "https://api-gateway.cwblue.cn";*/
+    private static final String GATEWAY_HOST = "http://localhost:8090";
 
     /**
      * get 请求
@@ -43,6 +44,7 @@ public class MethodInvokeImpl implements MethodInvoke {
             httpResponse = HttpRequest.get(GATEWAY_HOST + url)
                     .addHeaders(getHeaderMap(params, accessKey, secretKey))
                     .body(params)
+                    .form("words", params)
                     .execute();
         }catch (Exception e) {
             throw new BusinessException(BaseCode.INTERNAL_ERROR);
@@ -88,15 +90,15 @@ public class MethodInvokeImpl implements MethodInvoke {
      * @return 封装后的 Map
      */
     private Map<String, String> getHeaderMap(String params, String accessKey, String secretKey) {
+        String bytesParams = Arrays.toString(params.getBytes());
         Map<String, String> headerMap = new HashMap<>();
         headerMap.put("accessKey", accessKey);
-        headerMap.put("body", params);
+        headerMap.put("body", bytesParams);
         headerMap.put("nonce", RandomUtil.randomNumbers(5));
         headerMap.put("timeStamp", String.valueOf(System.currentTimeMillis() / 1000));
-        headerMap.put("sign", SignUtil.getSign(params, secretKey));
+        headerMap.put("sign", SignUtil.getSign(bytesParams, secretKey));
         return headerMap;
     }
-
 
 }
 

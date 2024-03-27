@@ -1,0 +1,6 @@
+com.wen.wenapiclient
+com.wen.wenapiclient.client
+com.wen.wenapiclient.request
+com.wen.wenapiclient.service
+com.wen.wenapiclient.service.impl
+com.wen.wenapiclient.util
